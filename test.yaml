@@ -1,0 +1,7 @@
+---
+- name: Test playbook
+  hosts: all
+  vars_files: vars.yaml
+  tasks:
+  - name: Test task
+    command: echo {{ test_var }}
