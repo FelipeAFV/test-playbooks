@@ -20,9 +20,10 @@
         dest: "/tmp/awx_extracted"
         remote_src: yes
 
-    - name: Mostrar el contenido del directorio extraído
-      command: ls -l /tmp/awx_extracted
+    - name: Mostrar los archivos extraídos
+      command: ls -lR /tmp/awx_extracted
       register: extracted_files
+
 
     - name: Mostrar los archivos extraídos
       debug:
