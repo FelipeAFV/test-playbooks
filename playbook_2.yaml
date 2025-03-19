@@ -1,0 +1,26 @@
+- name: Extraer y mostrar contenido del archivo tar
+  hosts: localhost
+  tasks:
+    - name: Mostrar la variable recibida de AWX
+      debug:
+        msg: "El archivo tar recibido es: {{ targz_path }}"
+
+    - name: Crear un directorio de destino
+      file:
+        path: /tmp/awx_extracted
+        state: directory
+        mode: '0755'
+
+    - name: Extraer el archivo tar.gz
+      unarchive:
+        src: "{{ targz_path }}"
+        dest: /tmp/awx_extracted
+        remote_src: yes
+
+    - name: Listar archivos extraídos
+      command: ls -l /tmp/awx_extracted
+      register: extracted_files
+
+    - name: Mostrar contenido extraído
+      debug:
+        msg: "{{ extracted_files.stdout_lines }}"

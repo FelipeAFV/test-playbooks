@@ -1,0 +1,25 @@
+- name: Crear y empaquetar archivos
+  hosts: localhost
+  tasks:
+    - name: Crear directorio de prueba
+      file:
+        path: /tmp/awx_shared_dir
+        state: directory
+        mode: '0755'
+
+    - name: Crear archivos dentro del directorio
+      copy:
+        dest: "/tmp/awx_shared_dir/file{{ item }}.txt"
+        content: "Este es el archivo {{ item }}"
+      loop: [1, 2, 3]
+
+    - name: Comprimir el directorio en un archivo tar.gz
+      archive:
+        path: /tmp/awx_shared_dir
+        dest: /tmp/awx_shared_dir.tar.gz
+        format: gz
+
+    - name: Definir variable en AWX para el siguiente job
+      set_stats:
+        data:
+          targz_path: "/tmp/awx_shared_dir.tar.gz"
