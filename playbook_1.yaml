@@ -16,8 +16,10 @@
     - name: Comprimir el directorio en un tar.gz
       archive:
         path: /tmp/awx_shared_dir
+        dest: /tmp/awx_shared_dir.tar.gz  # Se agrega explícitamente el destino
         format: gz
       register: tar_result
+
 
     - name: Leer el contenido del archivo tar.gz
       slurp:
