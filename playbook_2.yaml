@@ -8,6 +8,12 @@
         dest: "/tmp/awx_received.tar.gz"
         mode: '0644'
 
+    - name: Crear el directorio de destino si no existe
+      file:
+        path: /tmp/awx_extracted
+        state: directory
+        mode: '0755'
+
     - name: Extraer el archivo tar.gz
       unarchive:
         src: "/tmp/awx_received.tar.gz"
