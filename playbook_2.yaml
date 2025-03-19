@@ -1,26 +1,23 @@
-- name: Extraer y mostrar contenido del archivo tar
+- name: Recibir y extraer el tarball
   hosts: localhost
+  gather_facts: no
   tasks:
-    - name: Mostrar la variable recibida de AWX
-      debug:
-        msg: "El archivo tar recibido es: {{ targz_path }}"
-
-    - name: Crear un directorio de destino
-      file:
-        path: /tmp/awx_extracted
-        state: directory
-        mode: '0755'
+    - name: Guardar el tarball en un archivo temporal
+      copy:
+        content: "{{ tarball_base64 | b64decode }}"
+        dest: "/tmp/awx_received.tar.gz"
+        mode: '0644'
 
     - name: Extraer el archivo tar.gz
       unarchive:
-        src: "{{ targz_path }}"
-        dest: /tmp/awx_extracted
+        src: "/tmp/awx_received.tar.gz"
+        dest: "/tmp/awx_extracted"
         remote_src: yes
 
-    - name: Listar archivos extraídos
+    - name: Mostrar el contenido del directorio extraído
       command: ls -l /tmp/awx_extracted
       register: extracted_files
 
-    - name: Mostrar contenido extraído
+    - name: Mostrar los archivos extraídos
       debug:
         msg: "{{ extracted_files.stdout_lines }}"

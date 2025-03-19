@@ -1,25 +1,30 @@
-- name: Crear y empaquetar archivos
+- name: Crear y empaquetar archivos en un tarball
   hosts: localhost
+  gather_facts: no
   tasks:
-    - name: Crear directorio de prueba
+    - name: Crear un directorio temporal con archivos
       file:
         path: /tmp/awx_shared_dir
         state: directory
-        mode: '0755'
 
-    - name: Crear archivos dentro del directorio
+    - name: Crear archivos de ejemplo
       copy:
-        dest: "/tmp/awx_shared_dir/file{{ item }}.txt"
-        content: "Este es el archivo {{ item }}"
+        content: "Este es un archivo de prueba"
+        dest: "/tmp/awx_shared_dir/archivo{{ item }}.txt"
       loop: [1, 2, 3]
 
-    - name: Comprimir el directorio en un archivo tar.gz
+    - name: Comprimir el directorio en un tar.gz
       archive:
         path: /tmp/awx_shared_dir
-        dest: /tmp/awx_shared_dir.tar.gz
         format: gz
+      register: tar_result
 
-    - name: Definir variable en AWX para el siguiente job
+    - name: Leer el contenido del archivo tar.gz
+      slurp:
+        src: "{{ tar_result.dest }}"
+      register: tarball_data
+
+    - name: Pasar el contenido del tarball al siguiente job
       set_stats:
         data:
-          targz_path: "/tmp/awx_shared_dir.tar.gz"
+          tarball_base64: "{{ tarball_data['content'] }}"
